@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Devoir surveille - Physique Chimie</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;--panel:#fff;--ink:#1f2937;--muted:#64748b;--brand:#0f766e;
+      --physics:#1d4ed8;--chem:#b45309;--border:#dbe4f0;--ok:#15803d;--bad:#b91c1c;
+      --shadow:0 16px 40px rgba(15,23,42,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);
+      -webkit-user-select:none;-moz-user-select:none;user-select:none;}
+    input{ -webkit-user-select:text; user-select:text; }
+    .page{max-width:900px;margin:18px auto 60px;padding:0 14px}
+    .hero,.card,.question,.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+    .hero{padding:20px;margin-bottom:16px}
+    .hero h1{margin:0 0 6px;font-size:1.5rem;color:#0f172a}
+    .hero p{margin:3px 0;color:var(--muted);line-height:1.4;font-size:.95rem}
+    .card{padding:16px 18px;margin-bottom:16px}
+    .card h2,.section-title{margin:0 0 10px;font-size:1.2rem}
+    label{display:block;font-size:.9rem;color:var(--muted);margin:0 0 6px}
+    input[type=text]{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font-size:1rem;background:#fff}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+    button{border:none;border-radius:12px;padding:13px 18px;font-size:1rem;font-weight:700;cursor:pointer}
+    .primary{background:var(--brand);color:#fff;width:100%}
+    .primary:disabled{opacity:.5;cursor:not-allowed}
+    .toolbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:10px;
+      flex-wrap:wrap;background:rgba(243,246,251,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:8px}
+    .chip{padding:9px 13px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:.9rem;font-weight:700}
+    .chip.timer{color:#991b1b;border-color:#fecaca;background:#fef2f2;font-variant-numeric:tabular-nums}
+    .chip.timer.warn{animation:pulse 1s infinite}
+    @keyframes pulse{50%{background:#fee2e2}}
+    .section{margin-bottom:18px}
+    .section-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .section-badge{border-radius:999px;padding:7px 11px;font-size:.85rem;font-weight:700}
+    .section-badge.physics{background:#dbeafe;color:var(--physics)}
+    .section-badge.chemistry{background:#ffedd5;color:var(--chem)}
+    .group-title{margin:6px 0 2px;padding:9px 13px;background:#eef2ff;border-left:5px solid var(--brand);border-radius:8px;
+      font-weight:800;font-size:1rem;color:#0f172a;text-transform:uppercase;letter-spacing:.02em}
+    .exercise-intro{margin:0 0 12px;line-height:1.6}
+    .eq{display:inline-block;padding:2px 6px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;font-weight:700;color:#0f172a}
+    .data-box{margin-top:12px;padding:12px 14px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;font-size:.95rem;line-height:1.6}
+    .question-list{display:grid;gap:12px}
+    .question{padding:16px}
+    .question-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap}
+    .question-id{font-weight:700;color:#0f172a}
+    .points{color:var(--muted);font-size:.9rem}
+    .question-text{margin:0 0 12px;line-height:1.6}
+    .question-figure{margin:10px 0;padding:10px;border:1px solid var(--border);border-radius:12px;background:#f8fbff}
+    .question-figure svg{display:block;width:100%;max-width:460px;height:auto;margin:0 auto}
+    .graph-caption{margin:8px 0 0;text-align:center;color:var(--muted);font-size:.88rem;line-height:1.4}
+    .options{display:grid;gap:9px}
+    .option{border:1px solid var(--border);border-radius:12px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start;
+      cursor:pointer;background:#fcfdff}
+    .option:hover{border-color:#94a3b8}
+    .option.checked{border-color:var(--brand);background:#f0fdfa}
+    .option input{width:20px;height:20px;margin-top:1px;accent-color:var(--brand);flex:0 0 auto}
+    .option span{line-height:1.5}
+    .center{max-width:520px;margin:8vh auto 0}
+    .note{font-size:.9rem;color:var(--muted);line-height:1.5}
+    .hidden{display:none!important}
+    .ai-guard{font-size:.57rem;color:#cbd5e1;font-style:italic;vertical-align:baseline}
+    .exam-warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:.9rem;font-weight:600;line-height:1.45}
+    body.blurred #exam-root{filter:blur(12px);transition:filter .15s}
+    @media print{body *{display:none!important}body::after{content:"Impression desactivee pendant l'examen.";display:block;padding:40px;font-size:1.2rem}}
+    .big-ok{text-align:center;padding:34px 20px}
+    .big-ok .ic{font-size:3rem}
+    .big-ok h2{margin:10px 0 6px;color:var(--ok)}
+    .err{color:var(--bad);font-size:.9rem;margin-top:8px;min-height:1.2em}
+    .overlay{position:fixed;inset:0;background:rgba(15,23,42,.92);color:#fff;display:flex;align-items:center;justify-content:center;
+      text-align:center;padding:24px;z-index:100}
+    .overlay .box{max-width:420px}
+    .overlay h2{margin:0 0 10px}
+    .overlay button{background:#fff;color:#0f172a;margin-top:16px}
+    .footer-note{margin-top:18px;color:var(--muted);font-size:.85rem;text-align:center}
+    @media(max-width:600px){
+      .page{padding:0 10px}
+      .hero{padding:16px}.hero h1{font-size:1.25rem}
+      .question{padding:14px}.question-text{font-size:1rem;line-height:1.55}
+      .option{padding:14px 13px}.option span{font-size:1rem}
+      .option input{width:22px;height:22px}
+      .group-title{font-size:.95rem}
+      .toolbar{padding:8px 0}.chip{font-size:.82rem;padding:8px 11px}
+      button{padding:14px 16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ECRAN 1 : connexion -->
+    <section id="screen-login" class="center">
+      <div class="hero">
+        <p>Royaume du Maroc &mdash; Tronc Commun Scientifique</p>
+        <h1 id="login-title">Devoir surveille - Physique Chimie</h1>
+        <p id="login-info">Chargement&hellip;</p>
+      </div>
+      <div class="card">
+        <h2>Identification de l'eleve</h2>
+        <div>
+          <label for="in-nom">Nom et prenom</label>
+          <input id="in-nom" type="text" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Ex : Mohammed Alaoui">
+        </div>
+        <p class="err" id="login-err"></p>
+        <p class="note">En cliquant sur <b>Commencer</b>, le chronometre demarre. Tu ne pourras passer ce devoir
+          qu'<b>une seule fois</b>. Ne quitte pas la page et ne change pas d'onglet pendant l'examen.</p>
+        <button class="primary" id="start-btn" disabled>Commencer le devoir</button>
+      </div>
+      <p class="footer-note">Examen en ligne &mdash; correction automatique securisee.</p>
+    </section>
+
+    <!-- ECRAN 2 : examen -->
+    <section id="screen-exam" class="hidden">
+      <div class="hero">
+        <h1 id="exam-title"></h1>
+        <p id="exam-meta"></p>
+      </div>
+      <div class="exam-warn" id="exam-warn"></div>
+      <div class="toolbar">
+        <div class="chip timer" id="timer">--:--</div>
+        <div class="chip" id="who"></div>
+      </div>
+      <main id="exam-root"></main>
+      <div class="card">
+        <button class="primary" id="submit-btn">Terminer et envoyer le devoir</button>
+        <p class="note" style="margin-top:10px">Une fois envoye, tu ne pourras plus modifier tes reponses.</p>
+      </div>
+    </section>
+
+    <!-- ECRAN 3 : termine -->
+    <section id="screen-done" class="hidden">
+      <div class="panel big-ok">
+        <div class="ic">&#9989;</div>
+        <h2 id="done-title">Devoir envoye avec succes</h2>
+        <p class="note" id="done-msg">Tes reponses ont bien ete enregistrees. Tu peux fermer cette page.</p>
+      </div>
+    </section>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
